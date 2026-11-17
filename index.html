@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090711">
+<title>PET WORLD</title>
+<style>
+:root{--bg:#090711;--panel:#151126;--panel2:#1c1730;--purple:#9b6cff;--gold:#f4c96b;--muted:#a9a2bd;--white:#f8f5ff;--line:#33294c}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#34205c 0,transparent 48%),var(--bg);color:var(--white);font:15px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button{font:inherit;cursor:pointer}.app{max-width:520px;margin:auto;padding:18px 16px 100px}
+header{display:flex;justify-content:space-between;align-items:center;margin:8px 0 22px}
+.logo{font-weight:900;letter-spacing:2px;font-size:22px}.logo span{color:var(--gold)}
+.coins{border:1px solid var(--line);background:#171228;padding:9px 12px;border-radius:20px;color:var(--gold);font-weight:700}
+h1{font-size:27px;margin:0 0 5px}.sub{color:var(--muted);margin:0 0 20px}
+.hero{background:linear-gradient(145deg,#21173a,#121020 70%);border:1px solid #443263;border-radius:24px;padding:22px;text-align:center;box-shadow:0 18px 50px #0006}
+.egg{font-size:104px;line-height:1.25;filter:drop-shadow(0 10px 18px #a36aff55);animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px) rotate(2deg)}}
+.hero h2{margin:8px 0 5px;font-size:20px}.hero p{color:var(--muted);margin:0 0 16px}
+.primary{background:linear-gradient(100deg,#9b6cff,#7042c8);color:white;border:0;border-radius:15px;padding:14px 18px;font-weight:800;width:100%;box-shadow:0 8px 24px #7e51d344}
+.primary:disabled{opacity:.4;cursor:not-allowed}.secondary{background:#211a35;border:1px solid var(--line);color:var(--white);border-radius:13px;padding:11px 14px}
+.section{margin-top:24px}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.section h3{margin:0;font-size:18px}
+.muted{color:var(--muted);font-size:13px}
+.pet-card{display:flex;align-items:center;gap:14px;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+.pet-art{width:76px;height:76px;border-radius:18px;background:linear-gradient(145deg,#39265a,#21182f);display:grid;place-items:center;font-size:43px}
+.pet-name{font-weight:800;font-size:17px}.rarity{font-size:12px;color:var(--gold);margin-top:4px}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:#100d1cf2;backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:5;padding:10px 8px calc(10px + env(safe-area-inset-bottom))}
+.tabrow{display:flex;max-width:520px;width:100%;justify-content:space-around}.tab{background:none;border:0;color:var(--muted);display:grid;gap:4px;justify-items:center;font-size:11px}.tab b{font-size:21px}.tab.active{color:var(--gold)}
+.view{display:none}.view.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.collection-card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:13px;text-align:center}
+.collection-card .art{font-size:48px}.collection-card strong{display:block;margin-top:4px}.collection-card small{color:var(--gold)}
+.quest{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:16px;margin-bottom:10px}
+.quest button{white-space:nowrap}
+.notice{font-size:12px;color:var(--muted);line-height:1.5;margin-top:16px}
+.modal{position:fixed;inset:0;background:#05040bdc;display:none;place-items:center;padding:20px;z-index:10}.modal.show{display:grid}
+.modal-box{width:min(100%,360px);background:#19132a;border:1px solid #574078;border-radius:24px;padding:24px;text-align:center}
+.reveal{font-size:92px}.modal-box h2{margin:5px 0}.modal-box p{color:var(--muted)}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#251b39;border:1px solid var(--line);padding:10px 16px;border-radius:14px;display:none;z-index:20}
+.empty{color:var(--muted);text-align:center;padding:24px;background:var(--panel);border-radius:16px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">PET <span>WORLD</span></div><div class="coins">✦ <span id="coins">0</span></div></header>
+<main>
+<section id="home" class="view active">
+<h1>Твой маленький мир</h1><p class="sub">Заботься о питомцах и собирай коллекцию.</p>
+<div class="hero">
+<div class="egg">🥚</div><h2>Таинственное яйцо</h2><p id="eggText">Твоё первое яйцо уже ждёт тебя.</p>
+<button class="primary" id="hatchBtn">Открыть яйцо</button>
+</div>
+<div class="section">
+<div class="section-head"><h3>Твой питомец</h3><span class="muted" id="petCount">0 питомцев</span></div>
+<div id="featured"><div class="empty">Пока питомцев нет. Открой своё первое яйцо!</div></div>
+</div>
+<div class="notice">Демо-версия PET WORLD. Питомцы здесь тестовые; подключение настоящих Telegram Collectible Gifts будет отдельным этапом.</div>
+</section>
+<section id="collection" class="view">
+<h1>Коллекция</h1><p class="sub">Все питомцы, которых ты открыл.</p><div id="collectionGrid" class="grid"></div>
+</section>
+<section id="quests" class="view">
+<h1>Задания</h1><p class="sub">Выполняй задания, чтобы получать яйца.</p>
+<div class="quest"><div><strong>Познакомься с PET WORLD</strong><div class="muted">Открой первое яйцо</div></div><button class="secondary" id="introQuest" disabled>+1 🥚</button></div>
+<div class="quest"><div><strong>Погладь питомца</strong><div class="muted">Позаботься о своём любимце</div></div><button class="secondary" id="petQuest" disabled>+1 🥚</button></div>
+<div class="notice">Задания и награды сохраняются на этом устройстве в демо-версии.</div>
+</section>
+</main>
+</div>
+<nav class="tabs"><div class="tabrow">
+<button class="tab active" data-tab="home"><b>⌂</b>Главная</button>
+<button class="tab" data-tab="collection"><b>✧</b>Коллекция</button>
+<button class="tab" data-tab="quests"><b>☼</b>Задания</button>
+</div></nav>
+<div class="modal" id="modal"><div class="modal-box"><div class="reveal" id="revealArt">🐾</div><h2 id="revealName">Новый питомец!</h2><p id="revealRarity">Редкость</p><button class="primary" id="closeModal">Забрать питомца</button></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const pets=[
+ {id:'moon-cat',name:'Лунный кот',art:'🐈‍⬛',rarity:'Обычный',weight:45},
+ {id:'star-bunny',name:'Звёздный кролик',art:'🐰',rarity:'Обычный',weight:30},
+ {id:'purple-fox',name:'Аметистовый лис',art:'🦊',rarity:'Редкий',weight:15},
+ {id:'cloud-dragon',name:'Облачный дракон',art:'🐉',rarity:'Эпический',weight:8},
+ {id:'golden-phoenix',name:'Золотой феникс',art:'🦚',rarity:'Легендарный',weight:2}
+];
+const defaults={pets:[],eggs:1,coins:0,hatched:false,petted:false,introClaimed:false,petClaimed:false};
+let state;try{state={...defaults,...JSON.parse(localStorage.getItem('petworld-save')||'{}')}}catch(e){state={...defaults}}
+function save(){localStorage.setItem('petworld-save',JSON.stringify(state));render()}
+function toast(s){const t=document.getElementById('toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+function choosePet(){const available=pets.filter(p=>!state.pets.some(x=>x.id===p.id));if(!available.length)return null;const total=available.reduce((a,p)=>a+p.weight,0);let n=Math.random()*total;for(const p of available){n-=p.weight;if(n<=0)return p}return available[0]}
+function hatch(){if(state.eggs<1){toast('Пока нет яиц. Загляни в задания!');return}const p=choosePet();if(!p){toast('Ты собрал(а) всех тестовых питомцев!');return}state.eggs--;state.pets.push(p);state.hatched=true;save();document.getElementById('revealArt').textContent=p.art;document.getElementById('revealName').textContent=p.name;document.getElementById('revealRarity').textContent='✦ '+p.rarity;document.getElementById('modal').classList.add('show')}
+function pet(){if(!state.pets.length){toast('Сначала открой яйцо!');return}state.petted=true;state.coins+=5;save();toast('Питомцу приятно! +5 ✦')}
+function claim(which){const key=which==='intro'?'introClaimed':'petClaimed';if(state[key])return;if(which==='intro'&&!state.hatched){toast('Сначала открой первое яйцо');return}if(which==='pet'&&!state.petted){toast('Сначала погладь питомца');return}state[key]=true;state.eggs++;save();toast('Получено новое яйцо! 🥚')}
+function render(){document.getElementById('coins').textContent=state.coins;document.getElementById('petCount').textContent=state.pets.length+' питомцев';document.getElementById('eggText').textContent=state.eggs?`У тебя яиц: ${state.eggs}. Внутри может быть кто угодно!`:'Яиц пока нет — выполни задание, чтобы получить ещё.';document.getElementById('hatchBtn').disabled=state.eggs<1||state.pets.length>=pets.length;
+const featured=document.getElementById('featured');if(state.pets.length){const p=state.pets[state.pets.length-1];featured.innerHTML=`<div class="pet-card"><div class="pet-art">${p.art}</div><div style="flex:1"><div class="pet-name">${p.name}</div><div class="rarity">✦ ${p.rarity}</div><button class="secondary" style="margin-top:10px" id="petBtn">♡ Погладить</button></div></div>`;document.getElementById('petBtn').onclick=pet}else featured.innerHTML='<div class="empty">Пока питомцев нет. Открой своё первое яйцо!</div>';
+const grid=document.getElementById('collectionGrid');grid.innerHTML=state.pets.length?state.pets.map(p=>`<div class="collection-card"><div class="art">${p.art}</div><strong>${p.name}</strong><small>✦ ${p.rarity}</small></div>`).join(''):'<div class="empty" style="grid-column:1/-1">Коллекция пока пуста.</div>';
+document.getElementById('introQuest').disabled=!state.hatched||state.introClaimed;document.getElementById('introQuest').textContent=state.introClaimed?'Выполнено':'+1 🥚';document.getElementById('petQuest').disabled=!state.petted||state.petClaimed;document.getElementById('petQuest').textContent=state.petClaimed?'Выполнено':'+1 🥚'}
+document.getElementById('hatchBtn').onclick=hatch;document.getElementById('closeModal').onclick=()=>document.getElementById('modal').classList.remove('show');document.getElementById('introQuest').onclick=()=>claim('intro');document.getElementById('petQuest').onclick=()=>claim('pet');
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===b.dataset.tab))});
+render();
+</script>
+</body></html>
